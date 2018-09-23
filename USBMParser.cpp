@@ -18,7 +18,7 @@
 #include "usbmBaseListener.h"
 
 using namespace antlr4;
-//using namespace USBMParser;
+//using namespace your_namespace;
 
 using std::cout;
 using std::cerr;
