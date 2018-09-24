@@ -32,4 +32,4 @@ USBMParser
 
 # Generated Output files
 output_files/*.rst
-
+*.zip
