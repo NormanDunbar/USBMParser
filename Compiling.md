@@ -25,7 +25,6 @@ alias antlr4="java org.antlr.v4.Tool"
 cd USBMParser
 set CLASSPATH="path\to\ANTLR4\antlr-4.7.1-complete.jar"
 set PATH=%PATH%;"path\to\ANTLR4\Win64"
-set antlr4="java org.antlr.v4.Tool"
 ````
 
 
@@ -33,7 +32,7 @@ set antlr4="java org.antlr.v4.Tool"
 
 _Before you start_, look in the ``generated_source`` directory. If there _are_ files there, then skip this section and go straight to "Compiling" below. You only need this section if there are no files yet generated. The files you should fine will have extensions of `interp`, `tokens`, `h` and `cpp`.
 
-### Default - No Namespace.
+### Linux - Default - No Namespace.
 
 ````
 antlr4 -Dlanguage=Cpp usbm.g4 -o generated_source
@@ -41,8 +40,16 @@ antlr4 -Dlanguage=Cpp usbm.g4 -o generated_source
 
 **Note**: In the above 'language' and 'Cpp' are case dependent, anything other than the exact letter case shown above will cause errors.
 
+### Windows - Default - No Namespace.
 
-## Choose a Namespace
+````
+java org.antlr.v4.Tool -Dlanguage=Cpp usbm.g4 -o generated_source
+````
+
+**Note**: In the above 'language' and 'Cpp' are case dependent, anything other than the exact letter case shown above will cause errors.
+
+
+### Linux - Choose a Namespace
 
 The default generation doesn't use a namespace in C++, however, if you wish to, you can generate the C++ files with namespace support. The command line to do this is as follows:
 
@@ -50,7 +57,15 @@ The default generation doesn't use a namespace in C++, however, if you wish to, 
 antlr4 -Dlanguage=Cpp usbm.g4 -o generated_source -package your_namespace
 ````
 
-You will now also have to edit the file ``USBMParser.cpp`` and, look around line 20 for this code:
+### Windows - Default - No Namespace.
+
+````
+java org.antlr.v4.Tool -Dlanguage=Cpp usbm.g4 -o generated_source -package your_namespace
+````
+
+### Both - Edit Main File
+
+If you generated a namespace, then you will now also have to edit the file ``USBMParser.cpp``. Look around line 20 for this code:
 
 ````
 using namespace antlr4;

@@ -5,7 +5,7 @@
 #include <cstdio>
 
 // Don't forget to change this each time. :o)
-#define USBM_VERSION 0.1
+#define USBM_VERSION 0.01
 
 // Temporary working filename for the output
 // until we work out the sanitised keyword name.
@@ -127,6 +127,12 @@ public:
         cout << endl << "Keyword: " << keywordName << endl;
 
         tkFile = new ofstream(TEMPFILE, std::ofstream::out);
+        if (!tkFile->good()) {
+            cerr << "Failed creating " << TEMPFILE << ", cannot continue." << endl;
+            exit;
+        } else {
+            cout << TEMPFILE << " opened ok." << endl;
+        }
 
         *tkFile << "..\tFile created by USBM version " << USBM_VERSION << endl
                 << "..\tWritten by Norman Dunbar." << endl << endl
@@ -155,7 +161,12 @@ public:
         tkFile->close();
 
         // We also now have the sanitised name, so rename the file.
-        std::rename(TEMPFILE, (keywordFile + ".rst").c_str());
+        if (std::rename(TEMPFILE, (keywordFile + ".rst").c_str())) {
+            cerr << "Cannot rename " 
+                 << TEMPFILE << " to " 
+                 << keywordFile << ".rst" 
+                 << endl;
+        }
     }
 
 
@@ -272,18 +283,21 @@ public:
 
         // Find the parent rule for this rule.
         // For some reason, although a ParserRuleContext has getParent()
-        // the compiler says "no"!. This is a hack.
-        // GetText returns a string representing the parse tree from
-        // the Context's parent.
-        // It's either "kw: yada", "keyword: yada" or "xref: a,b,c...".
+        // the compiler says "no"!. That's Java for you. However, in C++
+        // there's a 'parent' field in the context. It just needs casting.
 
         string underLine(keywordName.length(), '=');
 
-        char c = ctx->parent->getText()[0];
-        switch (c) {
-            case 'k':
-            case 'K':
-                // Handle keyword.
+        ParserRuleContext *parentCtx = dynamic_cast<ParserRuleContext *>(ctx->parent);
+        
+        int parentRuleIndex = -1;
+        if (parentCtx) {
+            parentRuleIndex = parentCtx->getRuleIndex();
+        };
+        
+        switch (parentRuleIndex) {
+            case usbmParser::RuleTitle:
+                // Handle keyword title (aka name).
                 // Write out the label.
                 *tkFile << "..\t_"<<labelText << endl; 
 
@@ -298,8 +312,7 @@ public:
                 keywordFile = labelText;
                 break;
 
-            case 'x':
-            case 'X':
+            case usbmParser::RuleXref:
                 // Handle Xrefs.
 
                 // Print a comma if this is not the first xref.
@@ -513,23 +526,10 @@ public:
 
         cout << "Notelist...";
         cout.flush();
-
-        // Find the parent rule for this rule.
-        // For some reason, although a ParserRuleContext has getParent()
-        // the compiler says "no"!. This is a hack.
-        // GetText returns a string representing the parse tree from
-        // the Context's parent.
-        // It's either "note: ..." or "notes: ...".
-
-        //if (ctx->parent->getText().substr(0, 5) == "notes") {
-            // If this is a text notelist, write the heading.
-          //  if (ctx->text()) {
-            //    *tkFile << "**Note " 
-              //          << currentNote++
-                //        << "**" << endl << endl;
-            //}
-        //} // else, ignore for just "note", heading already done.
     }
+
+
+
     //-------------------------------------------------------------------------
     //                                                                     XREF
     //-------------------------------------------------------------------------
