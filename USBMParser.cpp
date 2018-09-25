@@ -5,7 +5,7 @@
 #include <cstdio>
 
 // Don't forget to change this each time. :o)
-#define USBM_VERSION 0.01
+#define USBM_VERSION 0.02
 
 // Temporary working filename for the output
 // until we work out the sanitised keyword name.
@@ -239,8 +239,9 @@ public:
         //
         // Keywords:
         //    Convert to a label for a reference;
-        //    Print the label 
-        //    Print the title
+        //    Print the label with leading underscore, trailing colon;
+        //    Print a blank line;
+        //    Print the title;
         //    Underline it.
         //
         // XREF:
@@ -304,8 +305,8 @@ public:
         switch (parentRuleIndex) {
             case usbmParser::RuleTitle:
                 // Handle keyword title (aka name).
-                // Write out the label.
-                *tkFile << "..\t_"<<labelText << endl; 
+                // Write out the label & blank line
+                *tkFile << "..\t_"<<labelText << ':' << endl << endl; 
 
                 // Write out the actual keyword.
                 *tkFile << keywordName << endl;

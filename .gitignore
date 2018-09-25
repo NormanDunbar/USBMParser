@@ -33,3 +33,7 @@ USBMParser
 # Generated Output files
 output_files/*.rst
 *.zip
+output_files/source/*
+output_files/build/*
+output_files/Makefile
+output_files/make.bat

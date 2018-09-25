@@ -1,8 +1,8 @@
-toolkit: "DJToolkit 1.16"
-location: "DJToolkit 1.16"
+toolkit: "Random Toolkit"
+location: "Random TK"
 
 
-kw: get_word%
+kw: GET_WORD%
 syntax: "x% = get_word%(#channel)"
 description:
 {{
@@ -11,7 +11,7 @@ description:
 
 
 
-kw: b_get$
+kw: B_GET$
 syntax: "x% = b_get$(#channel)"
 description:
 {{
@@ -52,7 +52,7 @@ code: [[
 
 666: ((The number of the beast!))
 667:<<The neighbour of the beast :-)>>
-xref: CLEAR_SCREEN
+xref: PRINT, STOP
 
 keyword: STOP
 syntax: "STOP"
@@ -60,7 +60,7 @@ description:
 <<
 This is a description.
 >>
-xref: FRED$, BARNEY%, WIL_MA, BET_TY
+xref: STOP, CLS, GET_WORD%, B_GET$
 
 /*
  * This is a 
@@ -84,7 +84,7 @@ code: [[
 1020 print something$
 1030 goto 1020
 ]]
-xref: PRINT_USING,LPRINT,LLIST
+xref: PRINT2
 
 
  
@@ -98,3 +98,4 @@ format
 text note for the PRINT2 command.
 }}
 
+cref: PRINT, CLS
