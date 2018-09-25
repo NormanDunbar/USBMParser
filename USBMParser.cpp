@@ -162,7 +162,10 @@ public:
         tkFile->close();
 
         // We also now have the sanitised name, so rename the file.
-        int errorCode = std::rename(TEMPFILE, (keywordFile + ".rst").c_str());
+        // Delete it first, as some operating systems (Hello Windows) will
+        // error out if the file exists. (Ignore removal errors.)
+        int errorCode = std::remove((keywordFile + ".rst").c_str());
+        errorCode = std::rename(TEMPFILE, (keywordFile + ".rst").c_str());
         if (errorCode) {
             cerr << "Cannot rename " 
                  << TEMPFILE << " to " 
