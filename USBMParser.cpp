@@ -138,6 +138,12 @@ public:
                 << "..\tWritten by Norman Dunbar." << endl << endl
                 << "..\tToolkit: " << toolkitName << endl
                 << "..\tLocation: " << locationName << endl << endl;
+
+        // Clear out previous syntaxes, ready for the 
+        // next keyword. Ditto the note counter.
+        syntaxList.clear();
+        syntaxMaxLength = 0;
+        currentNote = 1;
     }
 
 
@@ -152,19 +158,16 @@ public:
         *tkFile << endl << endl;
         cout << endl;
 
-        // Clear out previous syntaxes, ready for the 
-        // next keyword. Ditto the note counter.
-        syntaxList.clear();
-        currentNote = 1;
-
         // Close the current file.
         tkFile->close();
 
         // We also now have the sanitised name, so rename the file.
-        if (std::rename(TEMPFILE, (keywordFile + ".rst").c_str())) {
+        int errorCode = std::rename(TEMPFILE, (keywordFile + ".rst").c_str());
+        if (errorCode) {
             cerr << "Cannot rename " 
                  << TEMPFILE << " to " 
-                 << keywordFile << ".rst" 
+                 << keywordFile << ".rst. Error code: " 
+                 << errorCode 
                  << endl;
         }
     }
@@ -288,7 +291,7 @@ public:
 
         string underLine(keywordName.length(), '=');
 
-        ParserRuleContext *parentCtx = dynamic_cast<ParserRuleContext *>(ctx->parent);
+        ParserRuleContext *parentCtx = reinterpret_cast<ParserRuleContext *>(ctx->parent);
         
         int parentRuleIndex = -1;
         if (parentCtx) {
