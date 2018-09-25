@@ -106,7 +106,7 @@ g++ USBMParser.cpp generated_source/*.cpp \
 Windows doesn't like commands spreading over multiple lines, so everything that follows is on one single solitary lonesome line by itself. It also doesn't appear to like wildcards in the source file names, so prepare to type!
 
 ````
-g++ USBMParser.cpp generated_source/usbmLexer.cpp generated_source/usbmListener.cpp generated_source/usbmBaseListener.cpp  generated_source/usbmParser.cpp -I ANTLR4\include -I generated_source -std=c++11 -L ANTLR4\Win64 -l antlr4-runtime -o USBMParse.exe
+g++ USBMParser.cpp generated_source/usbmLexer.cpp generated_source/usbmListener.cpp generated_source/usbmBaseListener.cpp  generated_source/usbmParser.cpp -I ANTLR4\include -I generated_source -std=c++11 -L ANTLR4\Win64 -l antlr4-runtime -Wno-attributes -o USBMParse.exe
 ````
 
 You will see a few warnings like these:
@@ -116,13 +116,7 @@ ANTLR4\include/antlr4-common.h:81:31: warning: declaration 'class std::exception
    class ANTLR4CPP_PUBLIC std::exception; // Needed for VS 2015.
 ````
 
-and these:
-
-````
-ANTLR4\include/antlr4-common.h:81:31: warning: type attributes ignored after type is already defined [-Wattributes]
-````
-
-These are caused by the code being massaged for older versions of Visual Studio and can be ignored when compiling with g++.
+These are caused by the code being massaged for older versions of Visual Studio and can be ignored when compiling with g++. (Or, forward declarations of classes in header files give spurious warnings!)
 
 
 # Execution
