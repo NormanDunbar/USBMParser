@@ -10,7 +10,7 @@ You will sadly, require the Java Runtime to be available on your ``$PATH`` somew
 
 ## Do This Bit Once 
 
-### On Linux
+### On Linux 64bit
 
 ````
 cd USBMParser
@@ -19,7 +19,16 @@ export LD_LIBRARY_PATH=`pwd`/ANTLR4/
 alias antlr4="java org.antlr.v4.Tool"
 ````
 
-### On Windows
+### On Linux 32bit
+
+````
+cd USBMParser
+export CLASSPATH=`pwd`/ANTLR4/antlr-4.7.1-complete.jar
+export LD_LIBRARY_PATH=`pwd`/ANTLR4/Linux32
+alias antlr4="java org.antlr.v4.Tool"
+````
+
+### On Windows 64bit
 
 ````
 cd USBMParser
@@ -27,10 +36,18 @@ set CLASSPATH="path\to\ANTLR4\antlr-4.7.1-complete.jar"
 set PATH=%PATH%;"path\to\ANTLR4\Win64"
 ````
 
+### On Windows 32bit
+
+````
+cd USBMParser
+set CLASSPATH="path\to\ANTLR4\antlr-4.7.1-complete.jar"
+set PATH=%PATH%;"path\to\ANTLR4\Win32"
+````
 
 ## Generate C++ Files From the Grammar
 
 _Before you start_, look in the ``generated_source`` directory. If there _are_ files there, then skip this section and go straight to "Compiling" below. You only need this section if there are no files yet generated. The files you should fine will have extensions of `interp`, `tokens`, `h` and `cpp`.
+
 
 ### Linux - Default - No Namespace.
 
@@ -39,6 +56,7 @@ antlr4 -Dlanguage=Cpp usbm.g4 -o generated_source
 ````
 
 **Note**: In the above 'language' and 'Cpp' are case dependent, anything other than the exact letter case shown above will cause errors.
+
 
 ### Windows - Default - No Namespace.
 
@@ -87,7 +105,7 @@ The following should be considered:
 * There are libraries in the `ANTLR4` directory to be used at link time;
 * There are `*.cpp` files in the 1generated_source` directory which are required.
 
-### Compiling On Linux
+### Compiling On Linux 64bit
 
 The command line to compile the application, with all these considerations is as follows. You can type it all on one line - don't include the back slashes - or _exactly_ as shown below with nothing at all after the '\' at the end of each line.
 
@@ -101,7 +119,20 @@ g++ USBMParser.cpp generated_source/*.cpp \
     -l antlr4-runtime
 ````
 
-### Compiling On Windows
+### Compiling On Linux 32bit
+
+The command line to compile the application, with all these considerations, on 32bit Linux systems is as follows. You can type it all on one line - don't include the back slashes - or _exactly_ as shown below with nothing at all after the '\' at the end of each line.
+
+````
+g++ USBMParser.cpp generated_source/*.cpp \
+    -o USBMParser \
+    -I ANTLR4/include \
+    -I generated_source \
+    -std=c++11 \
+    -L ANTLR4/Linux32 \
+    -l antlr4-runtime
+````
+### Compiling On Windows 64bit
 
 Windows doesn't like commands spreading over multiple lines, so everything that follows is on one single solitary lonesome line by itself. It also doesn't appear to like wildcards in the source file names, so prepare to type!
 
