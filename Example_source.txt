@@ -1,5 +1,25 @@
-toolkit: "Random Toolkit"
+toolkit: "\"Random\" Toolkit"
 location: "Random TK"
+
+
+keyword: EMBEDDED_DQUOTE
+syntax: "Embedded_dquote ""Hello"" should work"
+syntax: "Embedded_dquote \"Hello\" should work"
+syntax: "Embedded_dquote ''Hello'' should not change"
+syntax: "Embedded_dquote \'Hello\' should not change"
+description:{{ This example has  double quotes escaped in the syntax string.}}
+{{They should be removed in the *.rst file, but the embedded and escaped single
+quotes will remain untouched.}}
+
+
+keyword: EMBEDDED_SQUOTE
+syntax: 'Embedded_squote ''Hello'' should work too'
+syntax: 'Embedded_squote \'Hello\' should work too'
+syntax: 'Embedded_squote ""Hello"" should not change'
+syntax: 'Embedded_squote \"Hello\" should not change'
+description:{{ This example has single quotes escaped in the syntax string.}}
+{{They should be removed in the *.rst file, but the embedded and escaped double
+quotes will remain untouched.}}
 
 
 kw: GET_WORD%

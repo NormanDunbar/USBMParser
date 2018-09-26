@@ -192,6 +192,7 @@ LISTING     : OPEN_2 (.)*? CLOSE_2
 // a backslash.
 //
 // 'This ''works'' so does \'this\'.' 
+// 'But this doesn''t work with different escapes of \' quotes.'
 //
 // CR/LF is not allowed in strings.
 //--------------------------------------------------------------

@@ -1,8 +1,9 @@
 # How to Compile USBMParser
 
-These instructions are specific to Windows & Linux, 64 bit systems. Currently (as of September 23rd 2018) the library files in the ``ANTLR4`` directory were built on 64 bit Linux and 64bit Windows 7 systems, hence, those are what they are able to be used on.
+These instructions are specific to Windows & Linux, 32 and 64 bit systems. 
 
-The runtime libraries were built on Linux with g++ 5.1 and on WIndows with the TDM version of g++ 5.1 for Windows. (From http://tdm-gcc.tdragon.net/download).
+
+The runtime libraries were built on Linux 64bit with g++ 5.1, on Linux 32bit with g++ 7.1 and on Windows with the TDM version of g++ 5.1 for Windows. (From http://tdm-gcc.tdragon.net/download).
 
 You will sadly, require the Java Runtime to be available on your ``$PATH`` somewhere, but _only_ if you need to regenerate the grammar into C++ files.
 
@@ -46,7 +47,7 @@ set PATH=%PATH%;"path\to\ANTLR4\Win32"
 
 ## Generate C++ Files From the Grammar
 
-_Before you start_, look in the ``generated_source`` directory. If there _are_ files there, then skip this section and go straight to "Compiling" below. You only need this section if there are no files yet generated. The files you should fine will have extensions of `interp`, `tokens`, `h` and `cpp`.
+_Before you start_, look in the ``generated_source`` directory. If there _are_ files there, then skip this section and go straight to "Compiling" below. You only need this section if there are no files yet generated. The files you should find will have extensions of `.interp`, `.tokens`, `.h` and `.cpp`.
 
 
 ### Linux - Default - No Namespace.
@@ -83,7 +84,7 @@ java org.antlr.v4.Tool -Dlanguage=Cpp usbm.g4 -o generated_source -package your_
 
 ### Both - Edit Main File
 
-If you generated a namespace, then you will now also have to edit the file ``USBMParser.cpp``. Look around line 20 for this code:
+If you generated a namespace, then you will now also have to edit the file ``USBMParser.cpp``. Look around lines 20-30 for this code:
 
 ````
 using namespace antlr4;
@@ -96,7 +97,7 @@ You will need to uncomment the second line and replace `your_namespace` with wha
 
 ## Compiling
 
-Compiling reequires a C++11 (or higher) C++ compiler. On Linux, `g++` will suffice, on WIndows, it's also best to use g++, see the top of this document for details of where it can be downloaded. 
+Compiling requires a C++11 (or higher) C++ compiler. On Linux, `g++` will suffice, on Windows, it's also best to use `g++`, see the top of this document for details of where it can be downloaded. 
 
 The following should be considered:
 
@@ -117,6 +118,7 @@ g++ USBMParser.cpp generated_source/*.cpp \
     -std=c++11 \
     -L ANTLR4 \
     -l antlr4-runtime
+    -Wno-attributes
 ````
 
 ### Compiling On Linux 32bit
@@ -130,8 +132,11 @@ g++ USBMParser.cpp generated_source/*.cpp \
     -I generated_source \
     -std=c++11 \
     -L ANTLR4/Linux32 \
-    -l antlr4-runtime
+    -l antlr4-runtime \
+    -Wno-attributes
 ````
+
+
 ### Compiling On Windows 64bit
 
 Windows doesn't like commands spreading over multiple lines, so everything that follows is on one single solitary lonesome line by itself. It also doesn't appear to like wildcards in the source file names, so prepare to type!
@@ -147,28 +152,28 @@ ANTLR4\include/antlr4-common.h:81:31: warning: declaration 'class std::exception
    class ANTLR4CPP_PUBLIC std::exception; // Needed for VS 2015.
 ````
 
-These are caused by the code being massaged for older versions of Visual Studio and can be ignored when compiling with g++. (Or, forward declarations of classes in header files give spurious warnings!)
+These are caused by the compiler not quite recognising `forward` declarations for classes. Sigh. They can, however, be ignored, although they do have nuisance value. It may be that other compilers do not have this problem.
 
 
 # Execution
 
 Once compiled, you should have a file named `USBMParser` in the current directory.
 
-The application creates its output files, one per keyword, in the current directory, so to avoid messing things up too much, the best course of action is:
+The application creates its output files, one per keyword, in _the current directory_, so to avoid messing things up too much, the best course of action is:
 
 ````
 cd output_files
-#  rm *
+#  rm *.rst
 ../USBMParser ../Example_source.txt
 ````
 
-On Windows, if you get an error about a missing `libantlr4-runtime.dll` then you didn't add the `ANTLR4\Win64` folder to your `%PATH%`. If you did, and still get the error, copy the file named `libantlr4-runtime.dll` from the `ANTLR4\Win64` folder to the location of the `USBMParser.exe` file. Windows is weird!
+On Windows, if you get an error about a missing `libantlr4-runtime.dll` then you didn't add the `ANTLR4\Win64` folder to your `%PATH%`. If you did, and still get the error, copy the file named `libantlr4-runtime.dll` from the `ANTLR4\Win64` folder to the location of the `USBMParser.exe` file. Windows is weird! If you get the same error, or a similar one, on Linux, you need to set `LD_LIBRARY_PATH` r include the directory where the `libantlr4-runtime.so.4.7.1` shared library is to be found.
 
 When execution has completed, you will see a number of files, some strangely named, in the `output_files` directory, or, wherever you happened to be when you executed the application.
 
 Those are the ReStructuredText files (`*.rst`) which need to be used to update the Online SuperBASIC Manual - OSBM.
 
-If you have a toolkit that you would like to see documented within the OSBM, then simply generated a source file, process it with OSBMParser, and zip up the resulting files and send them to Norm. Simple.
+If you have a toolkit that you would like to see documented within the OSBM, then simply generated a source file, process it with OSBMParser, and zip up the resulting `*.rst` files and send them to Norm. Simple.
 
 
 

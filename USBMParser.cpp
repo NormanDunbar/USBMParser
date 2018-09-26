@@ -5,7 +5,7 @@
 #include <cstdio>
 
 // Don't forget to change this each time. :o)
-#define USBM_VERSION 0.02
+#define USBM_VERSION 0.03
 
 // Temporary working filename for the output
 // until we work out the sanitised keyword name.
@@ -53,6 +53,9 @@ size_t xrefCounter = 0;
 // Sanitised Keyword name.
 string keywordFile;
 
+// Whatever String we are processing for Toolkit, Location or Syntax.
+string currentString;
+
 
 
 // Output file.
@@ -79,14 +82,12 @@ public:
     //-------------------------------------------------------------------------
     //                                                                  TOOLKIT
     //-------------------------------------------------------------------------
-    void enterToolkit(usbmParser::ToolkitContext  *ctx) override { 
-        // Extract the toolkit name and print it.
+    void exitToolkit(usbmParser::ToolkitContext  *ctx) override { 
+        // Extract the toolkit name and print it. We do this in
+        // exitToolkit() as currentString will have been done
+        // at that point, but not in enterToolkit().
 
-        toolkitName = ctx->string()->getText();
-
-        // Trim off quotes.
-        toolkitName.erase(0, 1);
-        toolkitName.erase(toolkitName.length() -1, 1);
+        toolkitName = currentString;
 
         // Write it out as a comment to the screen.
         cout << "Processing toolkit: " << toolkitName << endl;
@@ -97,18 +98,11 @@ public:
     //-------------------------------------------------------------------------
     //                                                                 LOCATION
     //-------------------------------------------------------------------------
-    void enterLocation(usbmParser::LocationContext  *ctx) override {
+    void exitLocation(usbmParser::LocationContext  *ctx) override {
         // Here, grab, and save the location.
 
-        locationName = ctx->string()->getText();
-
-        // Remove leading quote.
-        locationName.erase(0, 1);
+        locationName = currentString;
         locationLength = locationName.length();
-
-        // And the trailing quote.
-        locationName.erase(locationLength -1, 1);
-        --locationLength;
         
         cout << "All keywords located at: " << locationName << endl << endl;
     }
@@ -340,21 +334,16 @@ public:
     //-------------------------------------------------------------------------
     //                                                                   SYNTAX
     //-------------------------------------------------------------------------
-    void enterSyntax(usbmParser::SyntaxContext  *ctx) override {
+    void exitSyntax(usbmParser::SyntaxContext  *ctx) override {
 
         cout << "Syntax...";
         cout.flush();
 
         // Grab the current syntax.
-        string thisSyntax = ctx->string()->getText();
+        string thisSyntax = currentString;
 
-        // Remove leading quote.
-        thisSyntax.erase(0, 1);
-
-        // Grab the length & trim the trailing quote.
+        // Grab the length.
         string::size_type syntaxLength = thisSyntax.length();
-        thisSyntax.erase(syntaxLength -1, 1);
-        --syntaxLength;
 
         // If bigger, save in the syntaxMaxLength.
         if (syntaxLength > syntaxMaxLength) {
@@ -612,10 +601,73 @@ public:
         *tkFile << thisText << endl << endl;
     }
 
+
+    //-------------------------------------------------------------------------
+    //                                                                   STRING
+    //-------------------------------------------------------------------------
+    void enterString(usbmParser::StringContext *ctx) override {
+        // Remove the escaped double and, or single quotes. When
+        // done, save the amended text for use elsewhere.
+        // STRINGs are used in Toolkit, Location and Syntax, none of 
+        // which expect the leading and trailing quotes to be present.
+        
+        // Don't strip escapes single quotes from a double quoted string,
+        // and vice versa.
+        
+        cout << "String...";
+        cout.flush();
+        
+        
+        string thisString = ctx->getText();
+        string::size_type thisPos;
+        char thisDelimiter = thisString[0];
+        
+        // Examples of quote embedding.
+        // "Embedded_dquote \"Hello"" should work"
+        // 'Embedded_squote \'Hello'' should work too'
+
+        if (thisDelimiter == '"') {
+            // Try "":
+            while ((thisPos = thisString.find("\"\"")) != string::npos) {
+                // Remove the first of the double quotes from "".
+                thisString.erase(thisPos, 1);
+            }
+            
+            // Try \":
+            while ((thisPos = thisString.find("\\\"")) != string::npos) {
+                // Remove the back slash from \".
+                thisString.erase(thisPos, 1);
+            }
+        } else {            
+            // Try '':
+            while ((thisPos = thisString.find("''")) != string::npos) {
+                // Remove the first of the single quotes from ''.
+                thisString.erase(thisPos, 1);
+            }
+            
+            // Try \':
+            while ((thisPos = thisString.find("\\'")) != string::npos) {
+                // Remove the back slash from \'.
+                thisString.erase(thisPos, 1);
+            }
+        }
+        
+        // String leading and trailing quotes.
+        thisString.erase(0, 1);
+        thisString.erase(thisString.length() -1, 1);
+        
+        // Save the string.
+        currentString = thisString;
+    }
+
 };      // End of class.
 
 
 
+    
+
+
+    
 //=============================================================================
 //                                                                         MAIN
 //=============================================================================
